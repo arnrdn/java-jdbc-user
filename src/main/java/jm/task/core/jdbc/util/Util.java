@@ -1,10 +1,8 @@
 package jm.task.core.jdbc.util;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class Util {
     // реализуйте настройку соеденения с БД
@@ -14,6 +12,11 @@ public class Util {
     private static Connection connection;
 
     private Util() {
+
+    }
+
+    public static Connection getConnection() {
+
         try {
             if (connection == null) {
                 connection = DriverManager.getConnection(url, user, pswd);
@@ -22,18 +25,19 @@ public class Util {
             System.err.println("Error while getting connection with MySQL database: " + e.getMessage());
             e.printStackTrace();
         }
-    }
 
-    private static class SingletonHolder {
-        public static final Util HOLDER_INSTANCE = new Util();
-    }
-
-    public Connection getConnection() {
         return connection;
     }
 
-    public static Util getInstance() {
-        return SingletonHolder.HOLDER_INSTANCE;
+    public static void closeConnection() {
+        try {
+            if (!connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while closing connection with MySQL database: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

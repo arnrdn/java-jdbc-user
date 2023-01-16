@@ -10,7 +10,7 @@ public class UserDaoJDBCImpl implements UserDao {
     private Connection con;
 
     public UserDaoJDBCImpl() {
-        con = Util.getInstance().getConnection();
+        con = Util.getConnection();
     }
 
     public void createUsersTable() {
@@ -46,9 +46,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (Statement stmt = con.createStatement()) {
-            String query = new StringBuffer("DELETE FROM user WHERE id=").append(id).append(";").toString();
-            stmt.execute(query);
+        String sql = "DELETE FROM user WHERE id=?;";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
